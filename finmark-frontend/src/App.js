@@ -1,78 +1,46 @@
-import React, { useState } from "react";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import Login from './Login';
+import axios from 'axios';
 
 function App() {
-  const [activeTab, setActiveTab] = useState("register");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [response, setResponse] = useState("");
+  const [token, setToken] = useState(null);
+  const [profile, setProfile] = useState(undefined); // use undefined for "not loaded"
+  const [report, setReport] = useState(undefined);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (token) {
+      setProfile(undefined); // reset to loading
+      setReport(undefined);  // reset to loading
 
-    const endpoint =
-      activeTab === "register" ? "/api/register" : "/api/login";
+      // Fetch user profile
+      axios.get('http://localhost:5000/user/profile', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => setProfile(res.data))
+        .catch(() => setProfile(false));
 
-    try {
-      const res = await fetch(`http://localhost:5000${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      setResponse(data.message || "Something went wrong");
-    } catch (error) {
-      setResponse("Server error");
+      // Fetch report
+      axios.get('http://localhost:5000/report/report')
+        .then(res => setReport(res.data))
+        .catch(() => setReport(false));
     }
-  };
+  }, [token]);
+
+  if (!token) return <Login setToken={setToken} />;
 
   return (
-    <div className="app-container">
-      <header className="header">
-        <img
-          src="https://lh5.googleusercontent.com/fn_LrznLLKJsnYjkCglPjr-GbtbiVZGQz14zRTVdZflcAd2ozxRZ63AZgrti8jPkX3aS36IFshMGVi4Ym6qq7kSO3SLtIAw22yKNO5YXlU3WS62e14M0G_f63unXpP7FMafWNIeFCOs=w16383"
-          alt="FinMark Logo"
-          className="logo"
-        />
-        <h1>FinMark Corporation</h1>
-        <div className="tabs">
-          <button
-            className={activeTab === "register" ? "active" : ""}
-            onClick={() => setActiveTab("register")}
-          >
-            Register
-          </button>
-          <button
-            className={activeTab === "login" ? "active" : ""}
-            onClick={() => setActiveTab("login")}
-          >
-            Login
-          </button>
-        </div>
-      </header>
+    <div style={{ maxWidth: 600, margin: "40px auto", fontFamily: "Arial, sans-serif" }}>
+      <h1 style={{ textAlign: "center" }}>Welcome to FinMark</h1>
+      
+      <h2>User Profile</h2>
+      {profile === undefined && <div>Loading profile...</div>}
+      {profile === false && <div style={{ color: "red" }}>Failed to load profile data.</div>}
+      {profile && <pre>{JSON.stringify(profile, null, 2)}</pre>}
 
-      <form className="form" onSubmit={handleSubmit}>
-        <h2>{activeTab === "register" ? "Create Account" : "Login"}</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">
-          {activeTab === "register" ? "Register" : "Login"}
-        </button>
-        <p className="response-message">{response}</p>
-      </form>
+      <h2>Financial Report</h2>
+      {report === undefined && <div>Loading report...</div>}
+      {report === false && <div style={{ color: "red" }}>Failed to load report data.</div>}
+      {report && <pre>{JSON.stringify(report, null, 2)}</pre>}
     </div>
   );
 }

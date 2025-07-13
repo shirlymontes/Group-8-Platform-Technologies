@@ -4,20 +4,39 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router(); 
 
-const users = []; 
+// Demo users - in production, this would be in a database
+const users = [
+  { 
+    email: "john@example.com", 
+    username: "john", 
+    password: "$2b$10$0ChLJ3F/ZeUQQg5kUoWgLef3oErJysAsNYg0Qs3CXQc4cIbF7wGIy", // password
+    role: "user"
+  },
+  { 
+    email: "admin@example.com", 
+    username: "admin", 
+    password: "$2b$10$0ChLJ3F/ZeUQQg5kUoWgLef3oErJysAsNYg0Qs3CXQc4cIbF7wGIy", // password
+    role: "admin"
+  }
+]; 
 
 // REGISTER
 router.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, username, password } = req.body;
 
   try {
-    const existingUser = users.find((u) => u.email === email);
+    // Check if user already exists by email or username
+    const existingUser = users.find((u) => u.email === email || u.username === username);
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    users.push({ email, password: hashedPassword });
+    users.push({ 
+      email: email || `${username}@example.com`, 
+      username: username || email.split('@')[0], 
+      password: hashedPassword 
+    });
 
     res.status(201).json({ message: "User registered successfully!" });
   } catch (error) {
@@ -28,10 +47,15 @@ router.post("/register", async (req, res) => {
 
 // LOGIN
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, username, password } = req.body;
 
   try {
-    const user = users.find((u) => u.email === email);
+    // Find user by email or username
+    const user = users.find((u) => 
+      u.email === (email || username) || 
+      u.username === (username || email)
+    );
+    
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -41,19 +65,41 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { 
+        email: user.email, 
+        username: user.username,
+        role: user.role
+      }, 
+      process.env.JWT_SECRET || 'fallback-secret', 
+      { expiresIn: "1h" }
+    );
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ 
+      message: "Login successful", 
+      token,
+      user: {
+        email: user.email,
+        username: user.username
+      }
+    });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-module.exports = router;
-
 router.get("/users", (req, res) => {
-  res.json(users.map((u) => ({ email: u.email }))); // hides password
+  res.json(users.map((u) => ({ email: u.email, username: u.username }))); // hides password
 });
+
+// Test endpoint to verify backend is working
+router.get("/test", (req, res) => {
+  res.json({ 
+    message: "Auth service is working!", 
+    availableUsers: users.map(u => ({ username: u.username, email: u.email })),
+    timestamp: new Date().toISOString()
+  });
+});
+
+module.exports = router;

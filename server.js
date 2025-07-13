@@ -10,7 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // parsing JSON from Postman
 
-app.use("/api", authRoutes); 
+app.use("/auth", authRoutes); // Changed from /api to /auth to match frontend
+app.use("/api", authRoutes); // Keep /api as well for backward compatibility 
 
 app.get("/", (req, res) => {
   res.send("✅ Server is working!");
