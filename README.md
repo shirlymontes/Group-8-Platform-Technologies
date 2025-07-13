@@ -1,4 +1,4 @@
-# 🚀 FinMark Microservices Platform – Documentation
+# FinMark Microservices Platform – Documentation
 
 ## Project Overview
 FinMark is a financial technology platform designed with a microservices architecture.
