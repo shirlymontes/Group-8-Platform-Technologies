@@ -1,0 +1,17 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Users\John Clyde Austria\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.2.0
+2 info using node@v22.13.0
+3 silly config load:file:C:\Users\John Clyde Austria\AppData\Roaming\npm\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\John Clyde Austria\Documents\GitHub\Group-8-Platform-Technologies\.npmrc
+5 silly config load:file:C:\Users\John Clyde Austria\.npmrc
+6 silly config load:file:C:\Users\John Clyde Austria\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm exec react-scripts start
+8 verbose argv "exec" "--cache" "%USERPROFILE%\\.npm-cache" "--" "react-scripts" "start"
+9 verbose logfile logs-max:10 dir:C:\Users\John Clyde Austria\Documents\GitHub\Group-8-Platform-Technologies\%USERPROFILE%\.npm-cache\_logs\2025-07-20T03_23_33_561Z-
+10 verbose logfile C:\Users\John Clyde Austria\Documents\GitHub\Group-8-Platform-Technologies\%USERPROFILE%\.npm-cache\_logs\2025-07-20T03_23_33_561Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 http fetch GET 200 https://registry.npmjs.org/react-scripts 247ms (cache miss)
+14 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+15 http fetch GET 200 https://registry.npmjs.org/npm 340ms
+16 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368

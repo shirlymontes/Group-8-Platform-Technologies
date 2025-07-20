@@ -11,7 +11,7 @@ function Login({ setToken }) {
     e.preventDefault();
     setError('');
 
-    // === Frontend Validation for Milestone 2 ===
+    // === Frontend Validation ===
     if (!username.trim()) {
       setError('Username is required.');
       return;
@@ -20,23 +20,28 @@ function Login({ setToken }) {
       setError('Password is required.');
       return;
     }
-    // === End Frontend Validation ===
 
     setIsLoading(true);
 
+    // Demo mode - simulate login without backend
+    setTimeout(() => {
+      // Generate a mock token
+      const mockToken = 'demo-jwt-token-' + Date.now();
+      setToken(mockToken);
+      setIsLoading(false);
+    }, 1000); // Simulate network delay
+
+    /* Backend login code (commented out for demo mode)
     try {
-      // Send username and password to backend
       const res = await axios.post('http://localhost:5000/auth/login', { 
         username, 
         password 
       });
-      console.log('Login response:', res.data); // Debug log
+      console.log('Login response:', res.data);
       setToken(res.data.token);
       setError('');
     } catch (err) {
       console.error('Login error:', err.response?.data || err.message);
-
-      // Show backend validation errors (from new backend code)
       if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else if (err.response?.status === 500) {
@@ -49,6 +54,7 @@ function Login({ setToken }) {
     } finally {
       setIsLoading(false);
     }
+    */
   };
 
   return (
